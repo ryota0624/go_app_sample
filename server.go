@@ -44,8 +44,22 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
+func customHTTPErrorHandler(err error, c echo.Context) {
+	code := http.StatusInternalServerError
+	if he, ok := err.(*echo.HTTPError); ok {
+		code = he.Code
+	}
+	errorPage := fmt.Sprintf("%d.html", code)
+	if err := c.File(errorPage); err != nil {
+		c.Logger().Error(err)
+	}
+	c.Logger().Error(err)
+}
+
+
 func main() {
 	e := echo.New()
+	e.HTTPErrorHandler = customHTTPErrorHandler
 	renderer := &TemplateRenderer{
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
@@ -64,7 +78,8 @@ func main() {
 
 	e.GET("/signup", controllers.SignUpViewController)
 	e.POST("/signup", controllers.SignUpController)
-
+	e.GET("/user", controllers.UserController)
+	e.GET("/user/all", controllers.AllUserController)
 	e.Static("/static", "public")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", viper.Get("port"))))
 }

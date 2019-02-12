@@ -1,5 +1,5 @@
 run:
-	go run app/server.go
+	go run server.go
 
 watch-run:
 	godo server -w
