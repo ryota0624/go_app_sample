@@ -1,2 +1,3 @@
 port = "1234"
 application_name = "dev_app"
+salt = "suzuki"
