@@ -4,7 +4,7 @@ import do "gopkg.in/godo.v2"
 
 func tasks(p *do.Project) {
 	p.Task("server", nil, func(c *do.Context) {
-		c.Start("app/server.go", nil)
+		c.Start("server.go", nil)
 	}).Src("**/*.{go,gohtml}").
 		Debounce(3000)
 }

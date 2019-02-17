@@ -1,0 +1,6 @@
+goapp:
+  build: .
+  volumes: 
+    - ./:/go/src/go_app
+  ports:
+    - 1234:1234

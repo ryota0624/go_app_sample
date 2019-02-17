@@ -3,10 +3,10 @@ package controllers
 import (
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"github.com/labstack/echo"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/scrypt"
+	"golang.org/x/xerrors"
 	"net/http"
 	"sync"
 	"time"
@@ -53,7 +53,7 @@ func (users *AllUsers)findUser(id UserID) (bool, User, error) {
 	user, ok := users.sm.Load(id.value)
 
 	if !ok {
-		return false, User{}, errors.New("UserNotFound in Map")
+		return false, User{}, xerrors.New("UserNotFound in Map")
 	}
 
 	return true, user.(User) , nil

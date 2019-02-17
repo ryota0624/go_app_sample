@@ -17,5 +17,6 @@ require (
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
 	golang.org/x/sys v0.0.0-20190209173611-3b5209105503 // indirect
+	golang.org/x/xerrors v0.0.0-20190212162355-a5947ffaace3
 	gopkg.in/godo.v2 v2.0.9
 )

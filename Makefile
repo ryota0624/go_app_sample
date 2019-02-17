@@ -2,4 +2,4 @@ run:
 	go run server.go
 
 watch-run:
-	godo server -w
+	godo --rebuild && godo server -w
