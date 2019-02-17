@@ -19,12 +19,14 @@ func initConfig() {
 	viper.SetConfigFile(fmt.Sprintf("./configs/%s", configPath))
 
 	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal error config file: %s", err))
 	}
 }
 
+var errorPage500Template *template.Template
 func init() {
 	initConfig()
+	errorPage500Template = template.Must(template.ParseFiles("templates/500.html"))
 }
 
 
@@ -49,11 +51,23 @@ func customHTTPErrorHandler(err error, c echo.Context) {
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
 	}
-	errorPage := fmt.Sprintf("%d.html", code)
-	if err := c.File(errorPage); err != nil {
-		c.Logger().Error(err)
+
+	if code == http.StatusInternalServerError {
+		render500Page(err, c)
+	} else {
+		errorPage := fmt.Sprintf("public/%d.html", code)
+		if err := c.File(errorPage); err != nil {
+			c.Logger().Error(err)
+		}
 	}
-	c.Logger().Error(err)
+	
+
+	c.Logger().Error(fmt.Sprintf("%+v", err))
+
+}
+
+func render500Page(err error, c echo.Context) error {
+	return errorPage500Template.Execute(c.Response().Writer, fmt.Sprintf("%+v", err))
 }
 
 
@@ -65,6 +79,9 @@ func main() {
 	}
 	e.Renderer = renderer
 
+	e.GET("/", func(ctx echo.Context) error {
+		return ctx.String(http.StatusOK, "Hi!")
+	})
 	e.GET("/config", func(context echo.Context) error {
 		return context.JSONPretty(http.StatusOK, viper.AllSettings(), "\t")
 	})
@@ -79,6 +96,7 @@ func main() {
 	e.GET("/signup", controllers.SignUpViewController)
 	e.POST("/signup", controllers.SignUpController)
 	e.GET("/user", controllers.UserController)
+	e.GET("/user/:userID", controllers.FindUserController)
 	e.GET("/user/all", controllers.AllUserController)
 	e.Static("/static", "public")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", viper.Get("port"))))

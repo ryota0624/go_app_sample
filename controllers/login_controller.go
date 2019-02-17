@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"fmt"
 )
 
 
@@ -128,6 +129,22 @@ func UserController(context echo.Context) error {
 	}
 
 	return context.JSON(http.StatusOK, map[string]string{"name": user.Name})
+}
+
+func FindUserController(ctx echo.Context) error {
+	userID := UserID{ctx.Param("userID")}
+
+	ok, user, err := allUsers.findUser(userID)
+
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return ctx.String(http.StatusNotFound, fmt.Sprintf("user not found id=%s", userID.value))
+	}
+
+	return ctx.JSON(http.StatusOK, user)
 }
 
 func AllUserController(ctx echo.Context) error {
