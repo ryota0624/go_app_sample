@@ -26,7 +26,8 @@ type slackPostBody struct {
 }
 
 type slackPostSimpleBody struct {
-	Text string `json:"text"`
+	Text     string `json:"text"`
+	Username string `json:"username"`
 }
 
 type gitArgs struct {
@@ -41,7 +42,7 @@ type gitArgs struct {
 func (args gitArgs) format() string {
 	return fmt.Sprintf(
 		"*%s*\nBranch: %s\nAuthor: %s\nDate: %s\nHash: %s\nRepository: %s",
-		args.Subject, args.Hash, args.Author, args.CommitDate, args.Branch, args.RootDirName)
+		args.Subject, args.Branch, args.Author, args.CommitDate, args.Hash, args.RootDirName)
 }
 
 func makeGitArgs(str string) gitArgs {
@@ -70,7 +71,8 @@ func main() {
 func gitArgsToSlackPostSimpleBody(gitArgs gitArgs) slackPostSimpleBody {
 	text := gitArgs.format()
 	return slackPostSimpleBody{
-		Text: text,
+		Text:     text,
+		Username: "コミット",
 	}
 }
 
@@ -96,6 +98,7 @@ func slackPost(body slackPostSimpleBody) error {
 	if err != nil {
 		return err
 	}
+	println(resp)
 	defer resp.Body.Close()
 
 	return err
