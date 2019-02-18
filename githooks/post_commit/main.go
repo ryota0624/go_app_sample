@@ -19,16 +19,16 @@ func init() {
 	}
 }
 
-type slackPostBody struct {
-	Attachments []struct {
-		Text string `json:"text"`
-	} `json:"attachments"`
+type attachments struct {
+	Title string `json:"title"`
+	Text  string `json:"text"`
 }
 
-type slackPostSimpleBody struct {
-	Text     string `json:"text"`
-	Username string `json:"username"`
-	IconURL  string `json:"icon_url"`
+type slackPostBody struct {
+	Text        string        `json:"text"`
+	Username    string        `json:"username"`
+	IconURL     string        `json:"icon_url"`
+	Attachments []attachments `json:"attachments"`
 }
 
 type gitArgs struct {
@@ -42,8 +42,8 @@ type gitArgs struct {
 
 func (args gitArgs) format() string {
 	return fmt.Sprintf(
-		"*%s*\nBranch: %s\nAuthor: %s\nDate: %s\nHash: %s\nRepository: %s",
-		args.Subject, args.Branch, args.Author, args.CommitDate, args.Hash, args.RootDirName)
+		"Branch: %s\nAuthor: %s\nDate: %s\nHash: %s\nRepository: %s",
+		args.Branch, args.Author, args.CommitDate, args.Hash, args.RootDirName)
 }
 
 func makeGitArgs(str string) gitArgs {
@@ -70,22 +70,24 @@ func main() {
 
 var defaultCommitBotIconURL = "https://i1.wp.com/pbs.twimg.com/profile_images/602729491916435458/hSu0UjMC_400x400.jpg?resize=300%2C300&ssl=1"
 
-func gitArgsToSlackPostSimpleBody(gitArgs gitArgs) slackPostSimpleBody {
+func gitArgsToSlackPostSimpleBody(gitArgs gitArgs) slackPostBody {
 	botIcon := os.Getenv("GIT_COMMIT_BOT_ICON")
 
 	if len(botIcon) == 0 {
 		botIcon = defaultCommitBotIconURL
 	}
 
-	text := gitArgs.format()
-	return slackPostSimpleBody{
-		Text:     text,
-		Username: "コミット通知",
-		IconURL:  botIcon,
+	titleAttachment := attachments{Title: gitArgs.Subject, Text: gitArgs.format()}
+	attachments := []attachments{titleAttachment}
+	return slackPostBody{
+		Text:        "",
+		Username:    "コミット通知!",
+		IconURL:     botIcon,
+		Attachments: attachments,
 	}
 }
 
-func slackPost(body slackPostSimpleBody) error {
+func slackPost(body slackPostBody) error {
 	jsonBytes, err := json.Marshal(body)
 	if err != nil {
 		fmt.Println("JSON Marshal error:", err)
