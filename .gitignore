@@ -17,3 +17,4 @@ Gododir/godobin-*
 
 go.sum
 bin/
+.envrc

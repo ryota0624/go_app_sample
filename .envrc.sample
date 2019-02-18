@@ -1,0 +1,3 @@
+export GO111MODULE=on
+export GIT_COMMIT_CHANNEL=""
+export GIT_COMMIT_BOT_ICON=""
