@@ -22,6 +22,7 @@ func init() {
 type attachments struct {
 	Title string `json:"title"`
 	Text  string `json:"text"`
+	Color string `json:"color"`
 }
 
 type slackPostBody struct {
@@ -77,11 +78,11 @@ func gitArgsToSlackPostSimpleBody(gitArgs gitArgs) slackPostBody {
 		botIcon = defaultCommitBotIconURL
 	}
 
-	titleAttachment := attachments{Title: gitArgs.Subject, Text: gitArgs.format()}
+	titleAttachment := attachments{Title: gitArgs.Subject, Text: gitArgs.format(), Color: "good"}
 	attachments := []attachments{titleAttachment}
 	return slackPostBody{
 		Text:        "",
-		Username:    "コミット通知!",
+		Username:    "コミットログ",
 		IconURL:     botIcon,
 		Attachments: attachments,
 	}
