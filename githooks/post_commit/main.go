@@ -57,7 +57,9 @@ func makeGitArgs(str string) gitArgs {
 }
 
 func main() {
+	flag.Parse()
 	args := flag.Args()
+	println(args)
 	gitArgs := makeGitArgs(args[0])
 	err := slackPost(gitArgsToSlackPostSimpleBody(gitArgs))
 	if err != nil {
