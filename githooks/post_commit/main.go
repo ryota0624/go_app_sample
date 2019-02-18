@@ -28,6 +28,7 @@ type slackPostBody struct {
 type slackPostSimpleBody struct {
 	Text     string `json:"text"`
 	Username string `json:"username"`
+	IconURL  string `json:"icon_url"`
 }
 
 type gitArgs struct {
@@ -68,11 +69,20 @@ func main() {
 	}
 }
 
+var defaultCommitBotIconURL = "https://i1.wp.com/pbs.twimg.com/profile_images/602729491916435458/hSu0UjMC_400x400.jpg?resize=300%2C300&ssl=1"
+
 func gitArgsToSlackPostSimpleBody(gitArgs gitArgs) slackPostSimpleBody {
+	botIcon := os.Getenv("GIT_COMMIT_BOT_ICON")
+
+	if len(botIcon) == 0 {
+		botIcon = defaultCommitBotIconURL
+	}
+
 	text := gitArgs.format()
 	return slackPostSimpleBody{
 		Text:     text,
-		Username: "コミット",
+		Username: "コミット通知",
+		IconURL:  botIcon,
 	}
 }
 
