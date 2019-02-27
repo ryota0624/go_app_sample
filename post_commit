@@ -1,0 +1,6 @@
+#!/bin/sh
+gitlog_result=`git log -1 --pretty=format:"%s,%H,%cn,%cd"`
+git_branch=`git rev-parse --symbolic-full-name @`
+git_repository_root=`git rev-parse --show-toplevel`
+
+post_commit "${gitlog_result},${git_branch},${git_repository_root}"
